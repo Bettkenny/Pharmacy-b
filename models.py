@@ -45,10 +45,13 @@ class Drug(db.Model, SerializerMixin):
     
     id = db.Column(db.Integer, unique=True, primary_key=True)
     pharmacy_name = db.Column(db.String(100), db.ForeignKey('pharmacy.name'))
+    category = db.Column(db.string, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String, nullable=False)
     image_url = db.Column(db.String(255))
     status = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
+
 
     reviews = db.relationship('Review', back_populates='drug')
     orders = db.relationship('Order', back_populates='drug')
