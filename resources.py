@@ -236,6 +236,9 @@ class AdminPharmacyResource(Resource):
 class DrugResource(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('description', type = str, required = True, help = 'description cannot be blank')
+    parser.add_argument('drug_category', type = str, required = True, help = 'drug_category cannot be blank')
+    parser.add_argument('drug_name', type = str, required = True, help = 'drug_name cannot be blank')
+    parser.add_argument('quantity', type = int, required = True, help = 'quantity cannot be blank')
     parser.add_argument('image_url' ,type = str, required = True, help = 'image_url cannot be blank')  
     parser.add_argument('price' ,type = int, required = True, help = 'price cannot be blank')  
     parser.add_argument('pharmacy_name', type = str, required = True, help = 'pharmacy_name cannot be blank')  
@@ -246,7 +249,7 @@ class DrugResource(Resource):
     def get(self,drug_id = None):
         if drug_id is None:
             drugs = Drug.query.all()
-            return [{"id":drug.id,"pharmacy_name":drug.pharmacy_name,"description":drug.description,"image_url":drug.image_url,"status":drug.status,"price":drug.price}for drug in drugs]
+            return [{"id":drug.id,"pharmacy_name":drug.pharmacy_name,"drug_category":drug.drug_category,"drug_name":drug.drug_name,"quantity":drug.quantity, "description":drug.description,"image_url":drug.image_url,"status":drug.status,"price":drug.price}for drug in drugs]
         drug = Drug.query.get(drug_id)
         if not drug:
             return{"message":"drug not found."}
@@ -254,6 +257,9 @@ class DrugResource(Resource):
             "id":drug.id,
             "pharmacy_name":drug.pharmacy_name,
             "description":drug.description,
+            "drug_category":drug.drug_category,
+            "quantity":drug.quantity,
+            "drug_name":drug.drug_name,
             "image_url":drug.image_url,
             "status":drug.status,
             "price":drug.price
@@ -264,18 +270,21 @@ class DrugResource(Resource):
         if current_user.role != "admin":
             return {"message": "Access denied!admins only."},403
         data = request.get_json()
-        new_drug = Drug(pharmacy_name =data['pharmacy_name'],description = data['description'],image_url = data['image_url'],status = data['status'],price = data['price'])
+        new_drug = Drug(pharmacy_name =data['pharmacy_name'],drug_category = data['drug_category'],quantity=data['quantity'],drug_name = data['drug_name'],description = data['description'],image_url = data['image_url'],status = data['status'],price = data['price'])
         db.session.add(new_drug)
         db.session.commit()
         return {
             "message":"drug added successfully",
             "drug": {
-                "id":new_drug.id,
-                "pharmacy_name":new_drug.pharmacy_name,
-                "description":new_drug.description,
-                "image_url":new_drug.image_url,
-                "status":new_drug.status,
-                "price":new_drug.price
+            "id":new_drug.id,
+            "pharmacy_name":new_drug.pharmacy_name,
+            "description":new_drug.description,
+            "drug_category":new_drug.drug_category,
+            "quantity":new_drug.quantity,
+            "drug_name":new_drug.drug_name,
+            "image_url":new_drug.image_url,
+            "status":new_drug.status,
+            "price":new_drug.price
             }
         }
 
@@ -286,17 +295,19 @@ class AdminDrugResource(Resource):
         if current_user .role != "admin":
             return{"Access denied!admins only."},403
         data = request.get_json()
-        new_drug =  new_drug = Drug(pharmacy_name =data['pharmacy_name'],description = data['description'],image_url = data['image_url'],status = data['status'],price = data['price'])
+        new_drug =  new_drug = Drug(pharmacy_name =data['pharmacy_name'],drug_category = data['drug_category'],quantity=data['quantity'],drug_name = data['drug_name'],description = data['description'],image_url = data['image_url'],status = data['status'],price = data['price'])
         db.session.add(new_drug)
         db.session.commit()
         return {
-                "id":new_drug.id,
-                "pharmacy_name":new_drug.pharmacy_name,
-                "drug_type":new_drug.drug_type,
-                "description":new_drug.description,
-                "image_url":new_drug.image_url,
-                "status":new_drug.status,
-                "price":new_drug.price
+            "id":new_drug.id,
+            "pharmacy_name":new_drug.pharmacy_name,
+            "description":new_drug.description,
+            "drug_category":new_drug.drug_category,
+            "quantity":new_drug.quantity,
+            "drug_name":new_drug.drug_name,
+            "image_url":new_drug.image_url,
+            "status":new_drug.status,
+            "price":new_drug.price
         }
         
     @jwt_required()
@@ -312,6 +323,9 @@ class AdminDrugResource(Resource):
         data = request.get_json()
         drug.pharmacy_name = data.get('pharmacy_name', drug.pharmacy_name)
         drug.description = data.get('description', drug.description)
+        drug.drug_category = data.get('drug_category', drug.drug_category)
+        drug.drug_name = data.get('drug_name', drug.drug_name)
+        drug.quantity = data.get('quantity', drug.quantity)
         drug.image_url = data.get('image_url', drug.image_url)
         drug.status = data.get('status', drug.status)
         drug.price = data.get('price', drug.price)
@@ -319,12 +333,15 @@ class AdminDrugResource(Resource):
         db.session.commit()
 
         return {
-            "id": drug.id,
-            "pharmacy_name": drug.pharmacy_name,
-            "description": drug.description,
-            "image_url": drug.image_url,
-            "status": drug.status,
-            "price": drug.price
+            "id":drug.id,
+            "pharmacy_name":drug.pharmacy_name,
+            "description":drug.description,
+            "drug_category":drug.drug_category,
+            "quantity":drug.quantity,
+            "drug_name":drug.drug_name,
+            "image_url":drug.image_url,
+            "status":drug.status,
+            "price":drug.price
         }
 
         

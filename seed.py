@@ -31,7 +31,7 @@ with app.app_context():
 drugs_data =[
     {
       "pharmacy_name": "Dawa Pharmacy",
-      "category": "antibiotics",
+      "drug_category": "antibiotics",
       "drug_name": "penadols",
       "quantity": "1000g",
       "price": 1200,
@@ -41,7 +41,7 @@ drugs_data =[
     },
     {
       "pharmacy_name": "Dawa Pharmacy",
-      "category": "analgesics",
+      "drug_category": "analgesics",
       "drug_name": "aspirin",
       "quantity": "500g",
       "price": 400,
