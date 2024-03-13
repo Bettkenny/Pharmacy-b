@@ -42,7 +42,7 @@ class UserRegistrationResource(Resource):
         data = request.get_json()
         user.username =data.get('username', user.username)
         user.gender =data.get('gender', user.gender)
-        user.email =data.get('email', user.gender)
+        user.email =data.get('email', user.email)
         user.date_of_birth = data.get('date_of_birth', user.date_of_birth)
         user.contact =data.get('contact', user.contact)
         db.session.commit()
@@ -88,7 +88,7 @@ class UserLoginResource(Resource) :
             else:
                 return{"error": "invalid email or password"}, 401
         except Exception as e:
-            return{"error": str (e)}, 500  
+            return{"error": str (e)}, 501  
 
 class MessageResource(Resource):
     def get(self):
@@ -452,7 +452,7 @@ class DeleteResources(Resource):
         if order:
             db.session.delete(order)
             db.session.commit()
-            return {"message": "order deleted successfully."}
+            return {"message": "order deleted successfully."}, 200
         else:
-            return {"error": "order not deleted."}
+            return {"error": "order not deleted."}, 404
 
