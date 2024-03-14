@@ -18,10 +18,15 @@ class User(db.Model, SerializerMixin):
     email = db.Column(db.String(50), unique=True, nullable=False)
     contact = db.Column(db.Integer, nullable=False)
 
+    reviews = db.relationship('Review', back_populates='user')
+    orders = db.relationship ('Order', back_populates='user')
+
 @validates('gender')
 def validate_gender(self, key, value):
+    value = value.lower()  
     assert value in ['male', 'female'], "Gender must be male or female"
     return value
+
 
 class Message(db.Model, SerializerMixin):
      __tablename__ = 'messages'
@@ -45,8 +50,8 @@ class Drug(db.Model, SerializerMixin):
     
     id = db.Column(db.Integer, unique=True, primary_key=True)
     pharmacy_name = db.Column(db.String(100), db.ForeignKey('pharmacy.name'))
-    drug_category = db.Column(db.string, nullable=False)
-    drug_name = db.Column(db.string, nullable=False)
+    drug_category = db.Column(db.String, nullable=False)
+    drug_name = db.Column(db.String, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String, nullable=False)
     image_url = db.Column(db.String(255))

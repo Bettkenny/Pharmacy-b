@@ -1,12 +1,14 @@
 from app  import app, db
 from models import Pharmacy,  Drug, User
-
+from datetime import datetime
 user_data = {
     "username": "ken",
     "email": "mweno@gmail.com",
     "contact": "0741409419",
     "role": "admin",
-    "password": "ken123"
+    "password": "ken123",
+    "date_of_birth": datetime(1990, 1, 1),
+    "gender": "male"  
 }
 with app.app_context():
     user = User.query.filter_by(email=user_data["email"]).first()
