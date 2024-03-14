@@ -5,7 +5,7 @@ from sqlalchemy import Enum
 from sqlalchemy.orm import validates
 
 db = SQLAlchemy()
-bcrypt = Bcrypt
+bcrypt = Bcrypt()
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'

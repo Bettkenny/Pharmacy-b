@@ -3,7 +3,7 @@ from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token
 from models import db, User, Pharmacy, Payment, Drug, Review, Order, Message, bcrypt
 from datetime import datetime
-from flask_bcrypt import Bcrypt
+
 
 class UserRegistrationResource(Resource):
     def post(self):
@@ -23,17 +23,25 @@ class UserRegistrationResource(Resource):
             if existing_user:
                 return {"error": "Username is already taken."}, 400
             
+        
+            hashed_password = bcrypt.generate_password_hash(password)
+            date_of_birth = datetime.strptime(data["date_of_birth"],"%Y-%m-%d")
             
-            if not isinstance(password, str):
-                return {"error": "Invalid password provided."}, 400
-
-            
-            hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")  # Modified this line
-            
-            
-            new_user = User(username=username, password=hashed_password, email=email, date_of_birth=date_of_birth, contact=contact)
+            new_user = User(username=username, password=hashed_password, gender=gender, email=email, date_of_birth=date_of_birth, contact=contact)
             db.session.add(new_user)
             db.session.commit()
+
+            if new_user.id:
+                return{
+                "username": new_user.username,
+                "gender": new_user.gender,
+                "date_of_birth": new_user.date_of_birth.strftime('%Y-%m-%d'),
+                "email": new_user.email,
+                "contact": new_user.contact
+                }
+            
+
+                
             return {"message": "User registered successfully."}, 201
         except Exception as e:
             return {"error": str(e)}, 500
@@ -226,7 +234,7 @@ class AdminPharmacyResource(Resource):
     @jwt_required()
     def delete(self, pharmacy_id):
         current_user = User.query.filter_by(email=get_jwt_identity()).first()
-        if not current_user:
+        if current_user.role != "admin":
             return {'message': 'Only admins can delete pharmacies'}, 401
 
         pharmacy = Pharmacy.query.get(pharmacy_id)
@@ -272,7 +280,7 @@ class DrugResource(Resource):
     @jwt_required()
     def post(self):
         current_user = User.query.filter_by(email=get_jwt_identity()).first()
-        if not current_user:
+        if current_user.role != "admin":
             return {"message": "Access denied! Admins only."}, 403
 
         data = request.get_json()
