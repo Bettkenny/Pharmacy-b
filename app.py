@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
-from models import Payment
+from models import Payment, User
 from flask_bcrypt import Bcrypt
 
 from resources import (
@@ -54,6 +54,19 @@ api.add_resource(PharmacyResource, '/pharmacy', '/admin/pharmacy', '/admin/pharm
 api.add_resource(AdminPharmacyResource, '/admin/pharmacys', '/admin/pharmacys/<pharmacy_id>')
 api.add_resource(OrdersResources, '/orders', '/orders/<int:user_id>', '/orders/<int:id>')
 api.add_resource(DeleteResources, '/delete/<int:id>')
+
+@app.route('/profile/<int:user_id>', methods=['GET'])
+def profile(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    return jsonify({
+        'username': user.username,
+        'email': user.email,
+        'contact': user.contact,
+        'role': user.role
+        
+    }), 200
 
 if __name__ == '__main__':
     app.run(port=5000)

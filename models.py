@@ -17,7 +17,7 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     contact = db.Column(db.Integer, nullable=False)
-
+   
     reviews = db.relationship('Review', back_populates='user')
     orders = db.relationship ('Order', back_populates='user')
 
